@@ -79,9 +79,16 @@ def get_elements(html_file, tags):
         document = BeautifulSoup(f, 'html.parser')
 
         def condition(tag, attr):
-            # Don't include external links
-            return lambda x: x.name == tag \
-                and not x.get(attr, 'http').startswith(('http', '//'))
+            if tag == "meta": 
+                # Don't include other than file extensions
+                return lambda x: x.name == tag \
+                    and re.search(r'\.(([a-zA-Z]+\d+[a-zA-Z]*)' \
+                                     '|([a-zA-Z]*\d+[a-zA-Z]+)' \
+                                     '|([a-zA-Z]+))$', x.get(attr, 'content'))
+            else:
+                # Don't include external links
+                return lambda x: x.name == tag \
+                    and not x.get(attr, 'http').startswith(('http', '//'))
 
         all_tags = [(attr, document.find_all(condition(tag, attr)))
                     for tag, attr in tags]
@@ -122,7 +129,7 @@ def staticfy(html_file, args=argparse.ArgumentParser()):
     namespace = args.namespace or {}
 
     # default tags
-    tags = {('img', 'src'), ('link', 'href'), ('script', 'src')}
+    tags = {('img', 'src'), ('link', 'href'), ('script', 'src'), ('meta', 'content')}
 
     # generate additional_tags
     add_tags = {(tag, attr) for tag, attr in add_tags.items()}
