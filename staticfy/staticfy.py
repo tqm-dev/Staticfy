@@ -101,12 +101,9 @@ def replace_lines(html_file, transformed):
                 if attr in line and value in line:
 
                     # replace old link with new staticfied link
-                    new_line = line.replace(value, new_link)
+                    line = line.replace(value, new_link)
 
-                    result.append(new_line)
-                    break
-            else:
-                result.append(line)
+            result.append(line)
 
         return ''.join(result)
 
